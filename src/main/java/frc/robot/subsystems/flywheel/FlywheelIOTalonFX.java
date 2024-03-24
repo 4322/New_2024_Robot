@@ -27,50 +27,51 @@ import edu.wpi.first.math.util.Units;
 public class FlywheelIOTalonFX implements FlywheelIO {
   private static final double GEAR_RATIO = 1.5;
 
-  private final TalonFX leader = new TalonFX(0);
-  private final TalonFX follower = new TalonFX(1);
+  private final TalonFX talon;
 
-  private final StatusSignal<Double> leaderPosition = leader.getPosition();
-  private final StatusSignal<Double> leaderVelocity = leader.getVelocity();
-  private final StatusSignal<Double> leaderAppliedVolts = leader.getMotorVoltage();
-  private final StatusSignal<Double> leaderCurrent = leader.getSupplyCurrent();
-  private final StatusSignal<Double> followerCurrent = follower.getSupplyCurrent();
+  private final StatusSignal<Double> position;
+  private final StatusSignal<Double> velocity;
+  private final StatusSignal<Double> appliedVolts;
+  private final StatusSignal<Double> current;
 
-  public FlywheelIOTalonFX() {
+  public FlywheelIOTalonFX(int talonID) {
+    talon = new TalonFX(talonID);
+
+    position = talon.getPosition();
+    velocity = talon.getVelocity();
+    appliedVolts = talon.getMotorVoltage();
+    current = talon.getSupplyCurrent();
+
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 30.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    leader.getConfigurator().apply(config);
-    follower.getConfigurator().apply(config);
-    follower.setControl(new Follower(leader.getDeviceID(), false));
+    talon.getConfigurator().apply(config);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
-    leader.optimizeBusUtilization();
-    follower.optimizeBusUtilization();
+        50.0, position, velocity, appliedVolts, current);
+    talon.optimizeBusUtilization();
   }
 
   @Override
   public void updateInputs(FlywheelIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
-    inputs.positionRad = Units.rotationsToRadians(leaderPosition.getValueAsDouble()) / GEAR_RATIO;
+        position, velocity, appliedVolts, current);
+    inputs.positionRad = Units.rotationsToRadians(position.getValueAsDouble()) / GEAR_RATIO;
     inputs.velocityRadPerSec =
-        Units.rotationsToRadians(leaderVelocity.getValueAsDouble()) / GEAR_RATIO;
-    inputs.appliedVolts = leaderAppliedVolts.getValueAsDouble();
-    inputs.currentAmps =
-        new double[] {leaderCurrent.getValueAsDouble(), followerCurrent.getValueAsDouble()};
+        Units.rotationsToRadians(velocity.getValueAsDouble()) / GEAR_RATIO;
+    inputs.appliedVolts = appliedVolts.getValueAsDouble();
+    inputs.currentAmps = current.getValueAsDouble();
   }
 
   @Override
   public void setVoltage(double volts) {
-    leader.setControl(new VoltageOut(volts));
+    talon.setControl(new VoltageOut(volts));
   }
 
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    leader.setControl(
+    talon.setControl(
         new VelocityVoltage(
             Units.radiansToRotations(velocityRadPerSec),
             0.0,
@@ -84,7 +85,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   @Override
   public void stop() {
-    leader.stopMotor();
+    talon.stopMotor();
   }
 
   @Override
@@ -93,6 +94,6 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     config.kP = kP;
     config.kI = kI;
     config.kD = kD;
-    leader.getConfigurator().apply(config);
+    talon.getConfigurator().apply(config);
   }
 }
