@@ -13,15 +13,10 @@
 
 package frc.robot.subsystems.outtake;
 
-import static edu.wpi.first.units.Units.*;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.subsystems.flywheel.FlywheelIOInputsAutoLogged;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -29,11 +24,12 @@ public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
-  private final SysIdRoutine sysId;
+  private final String name;
 
   /** Creates a new Flywheel. */
-  public Flywheel(FlywheelIO io) {
+  public Flywheel(FlywheelIO io, String name) {
     this.io = io;
+    this.name = name;
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -51,22 +47,19 @@ public class Flywheel extends SubsystemBase {
         ffModel = new SimpleMotorFeedforward(0.0, 0.0);
         break;
     }
+  }
 
-    // Configure SysId
-    sysId =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,
-                null,
-                null,
-                (state) -> Logger.recordOutput("Flywheel/SysIdState", state.toString())),
-            new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
+  /**
+   * Update inputs without running the rest of the periodic logic. This is useful since these
+   * updates need to be properly thread-locked.
+   */
+  public void updateInputs() {
+    io.updateInputs(inputs);
   }
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Flywheel", inputs);
+    Logger.processInputs("Outtake/" + name, inputs);
   }
 
   /** Run open loop at the specified voltage. */
@@ -86,16 +79,6 @@ public class Flywheel extends SubsystemBase {
   /** Stops the flywheel. */
   public void stop() {
     io.stop();
-  }
-
-  /** Returns a command to run a quasistatic test in the specified direction. */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return sysId.quasistatic(direction);
-  }
-
-  /** Returns a command to run a dynamic test in the specified direction. */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return sysId.dynamic(direction);
   }
 
   /** Returns the current velocity in RPM. */
