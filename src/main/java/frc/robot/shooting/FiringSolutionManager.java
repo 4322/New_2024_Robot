@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.util.interpolation.GenericCalculator;
 import frc.robot.util.interpolation.GenericFiringSolutionManager;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,8 @@ public class FiringSolutionManager implements GenericFiringSolutionManager<Firin
   private final GenericCalculator<FiringSolution> calculator;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
-  public FiringSolutionManager(ArrayList<FiringSolution> solutionArrayList, GenericCalculator<FiringSolution> calculator) {
+  public FiringSolutionManager(
+      ArrayList<FiringSolution> solutionArrayList, GenericCalculator<FiringSolution> calculator) {
     solutions = solutionArrayList;
     this.calculator = calculator;
     calculator.init(solutions);

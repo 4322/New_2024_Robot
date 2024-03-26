@@ -1,8 +1,7 @@
 package frc.robot.shooting;
 
-import java.util.ArrayList;
-
 import frc.robot.util.interpolation.GenericFiringSolution;
+import java.util.ArrayList;
 
 public class FiringSolution extends GenericFiringSolution {
   private final double shotMag;
