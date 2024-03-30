@@ -1,4 +1,4 @@
-package frc.robot.subsystems.limelight;
+package frc.robot.sensors.limelight;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -13,8 +13,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.LimelightConstants;
-import frc.robot.subsystems.limelight.LimelightHelpers.LimelightTarget_Fiducial;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,60 +50,19 @@ public class Limelight extends SubsystemBase {
   // should always be calculated with WPI coordinates (front is positive X)
   Translation2d offset;
 
-  private static Limelight outtakeLimelight;
-  private static Limelight intakeLimelight;
-
-  public static Limelight getIntakeInstance() {
-    if (intakeLimelight == null) {
-      // Measuring from front of bumpers
-      // Limelight name must match limelight tool
-      intakeLimelight =
-          new Limelight(
-              LimelightConstants.intakeLimelightName,
-              Constants.LimelightConstants.intakeLimelightHeight,
-              Constants.LimelightConstants.intakeLimelightAngle,
-              Constants.LimelightConstants.intakeLimeLightXOffsetMeters,
-              Constants.LimelightConstants.intakeLimelightYOffsetMeters,
-              false,
-              false,
-              Constants.intakeLimeLightEnabled);
-    }
-    return intakeLimelight;
-  }
-
-  public static Limelight getOuttakeInstance() {
-    if (outtakeLimelight == null) {
-      // Measuring from back of bumpers
-      // Limelight name must match limelight tool
-      outtakeLimelight =
-          new Limelight(
-              LimelightConstants.outtakeLimelightName,
-              Constants.LimelightConstants.outtakeLimelightHeight,
-              Constants.LimelightConstants.outtakeLimelightAngle,
-              Constants.LimelightConstants.outtakeLimelightXOffsetMeters,
-              Constants.LimelightConstants.outtakeLimelightYOffsetMeters,
-              true,
-              false,
-              Constants.outtakeLimeLightEnabled);
-    }
-    return outtakeLimelight;
-  }
-
-  private Limelight(
+  public Limelight(
       String limelightName,
       double limelightHeightMeters,
       double limelightAngleDegrees,
       double xOffsetMeters,
       double yOffsetMeters,
       boolean facingBackward,
-      boolean isTestSubsystem,
       boolean enabled) {
     name = limelightName;
     limeHeight = limelightHeightMeters;
     limeAngle = limelightAngleDegrees;
     offset = new Translation2d(xOffsetMeters, yOffsetMeters);
     backward = facingBackward;
-    this.isTestSubsystem = isTestSubsystem;
     this.enabled = enabled;
 
     if (enabled) {
