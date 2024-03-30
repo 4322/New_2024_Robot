@@ -160,6 +160,11 @@ public class RobotContainer {
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
   }
 
+  public void disabledPeriodic() {
+    drive.stop();
+    flywheel.stop();
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
