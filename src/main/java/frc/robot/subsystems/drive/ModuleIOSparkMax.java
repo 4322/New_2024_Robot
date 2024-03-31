@@ -56,35 +56,11 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final boolean isTurnMotorInverted = true;
   private final Rotation2d absoluteEncoderOffset;
 
-  public ModuleIOSparkMax(int index) {
-    switch (index) {
-      case 0:
-        driveSparkMax = new CANSparkMax(1, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(2, MotorType.kBrushless);
-        turnAbsoluteEncoder = new AnalogInput(0);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
-        break;
-      case 1:
-        driveSparkMax = new CANSparkMax(3, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(4, MotorType.kBrushless);
-        turnAbsoluteEncoder = new AnalogInput(1);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
-        break;
-      case 2:
-        driveSparkMax = new CANSparkMax(5, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(6, MotorType.kBrushless);
-        turnAbsoluteEncoder = new AnalogInput(2);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
-        break;
-      case 3:
-        driveSparkMax = new CANSparkMax(7, MotorType.kBrushless);
-        turnSparkMax = new CANSparkMax(8, MotorType.kBrushless);
-        turnAbsoluteEncoder = new AnalogInput(3);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
-        break;
-      default:
-        throw new RuntimeException("Invalid module index");
-    }
+  public ModuleIOSparkMax(int driveID, int turnID, int analogInputChannel, Rotation2d absEncoderOffset) {
+    driveSparkMax = new CANSparkMax(driveID, MotorType.kBrushless);
+    turnSparkMax = new CANSparkMax(turnID, MotorType.kBrushless);
+    turnAbsoluteEncoder = new AnalogInput(analogInputChannel);
+    absoluteEncoderOffset = absEncoderOffset;
 
     driveSparkMax.restoreFactoryDefaults();
     turnSparkMax.restoreFactoryDefaults();

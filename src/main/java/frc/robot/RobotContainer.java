@@ -26,6 +26,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.shooting.FiringSolutionManager;
+import frc.robot.sensors.notesensor.NoteSensor;
+import frc.robot.sensors.notesensor.NoteSensorIO;
+import frc.robot.sensors.notesensor.NoteSensorIOReal;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -51,6 +54,9 @@ public class RobotContainer {
   private final Drive drive;
   private final Flywheel flywheel;
 
+  // Sensors
+  private final NoteSensor noteSensor;
+
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
 
@@ -66,14 +72,18 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
+        // TODO: update IDs
+
+        // modules are in the order of FL, FR, BL, BR
         drive =
             new Drive(
                 new GyroIOPigeon2(true),
-                new ModuleIOTalonFX(0),
-                new ModuleIOTalonFX(1),
-                new ModuleIOTalonFX(2),
-                new ModuleIOTalonFX(3));
+                new ModuleIOTalonFX(0, 1, 2, Rotation2d.fromRotations(0)),
+                new ModuleIOTalonFX(3, 4, 5, Rotation2d.fromRotations(0)),
+                new ModuleIOTalonFX(6, 7, 8, Rotation2d.fromRotations(0)),
+                new ModuleIOTalonFX(9, 10, 11, Rotation2d.fromRotations(0)));
         flywheel = new Flywheel(new FlywheelIOTalonFX());
+        noteSensor = new NoteSensor(new NoteSensorIOReal(5, 6));
         break;
 
       case SIM:
@@ -86,6 +96,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
+        noteSensor = new NoteSensor(new NoteSensorIO() {});
         break;
 
       default:
@@ -98,6 +109,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
+        noteSensor = new NoteSensor(new NoteSensorIO() {});
         break;
     }
 
@@ -140,6 +152,11 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
+  // this method runs every loop in all modes
+  public void periodic() {
+    noteSensor.periodic();
+  }
+
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -168,6 +185,11 @@ public class RobotContainer {
         .whileTrue(
             Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
+  }
+
+  public void disabledPeriodic() {
+    drive.stop();
+    flywheel.stop();
   }
 
   /**
