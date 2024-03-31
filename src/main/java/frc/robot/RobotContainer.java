@@ -67,13 +67,16 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
+        // TODO: update IDs
+
+        // modules are in the order of FL, FR, BL, BR
         drive =
             new Drive(
                 new GyroIOPigeon2(true),
-                new ModuleIOTalonFX(0),
-                new ModuleIOTalonFX(1),
-                new ModuleIOTalonFX(2),
-                new ModuleIOTalonFX(3));
+                new ModuleIOTalonFX(0, 1, 2, Rotation2d.fromRotations(0)),
+                new ModuleIOTalonFX(3, 4, 5, Rotation2d.fromRotations(0)),
+                new ModuleIOTalonFX(6, 7, 8, Rotation2d.fromRotations(0)),
+                new ModuleIOTalonFX(9, 10, 11, Rotation2d.fromRotations(0)));
         flywheel = new Flywheel(new FlywheelIOTalonFX());
         noteSensor = new NoteSensor(new NoteSensorIOReal(5, 6));
         break;
