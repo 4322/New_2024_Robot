@@ -24,6 +24,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.sensors.notesensor.NoteSensor;
+import frc.robot.sensors.notesensor.NoteSensorIO;
+import frc.robot.sensors.notesensor.NoteSensorIOReal;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -48,6 +51,9 @@ public class RobotContainer {
   private final Drive drive;
   private final Flywheel flywheel;
 
+  // Sensors
+  private final NoteSensor noteSensor;
+
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
 
@@ -69,6 +75,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(2),
                 new ModuleIOTalonFX(3));
         flywheel = new Flywheel(new FlywheelIOTalonFX());
+        noteSensor = new NoteSensor(new NoteSensorIOReal(5, 6));
         break;
 
       case SIM:
@@ -81,6 +88,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
+        noteSensor = new NoteSensor(new NoteSensorIO() {});
         break;
 
       default:
@@ -93,6 +101,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
+        noteSensor = new NoteSensor(new NoteSensorIO() {});
         break;
     }
 
@@ -128,6 +137,11 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+  }
+
+  // this method runs every loop in all modes
+  public void periodic() {
+    noteSensor.periodic();
   }
 
   /**
