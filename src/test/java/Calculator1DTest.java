@@ -15,7 +15,7 @@ public class Calculator1DTest {
     solutions.add(new FiringSolution(5, 0, 10, 10));
     solutions.add(new FiringSolution(10, 0, 30, 30));
     solutions.add(new FiringSolution(30, 0, 50, 50));
-    manager = new FiringSolutionManager(solutions, new Calculator1D<>());
+    manager = FiringSolutionManager.fromArrayList(solutions, new Calculator1D<>());
   }
 
   @AfterEach

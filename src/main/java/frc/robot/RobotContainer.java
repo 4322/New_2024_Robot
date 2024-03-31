@@ -17,6 +17,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,7 +37,6 @@ import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.util.interpolation.Calculator1D;
-import java.util.ArrayList;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -101,8 +101,10 @@ public class RobotContainer {
         break;
     }
 
-    firingSolutionManager = new FiringSolutionManager(new ArrayList<>(), new Calculator1D<>());
-    firingSolutionManager.loadSolutions();
+    firingSolutionManager =
+        FiringSolutionManager.fromJson(
+            new Calculator1D<>(),
+            Filesystem.getDeployDirectory().getPath() + "/FiringSolutions.json");
 
     // Set up auto routines
     NamedCommands.registerCommand(

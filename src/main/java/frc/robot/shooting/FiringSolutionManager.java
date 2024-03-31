@@ -1,59 +1,78 @@
 package frc.robot.shooting;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.util.interpolation.GenericCalculator;
 import frc.robot.util.interpolation.GenericFiringSolutionManager;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class FiringSolutionManager implements GenericFiringSolutionManager<FiringSolution> {
   private final ArrayList<FiringSolution> solutions;
   private final GenericCalculator<FiringSolution> calculator;
-  private final ObjectMapper objectMapper = new ObjectMapper();
 
-  public FiringSolutionManager(
+  public static FiringSolutionManager createNew(GenericCalculator<FiringSolution> calculator) {
+    return fromArrayList(new ArrayList<>(), calculator);
+  }
+
+  public static FiringSolutionManager fromJson(
+      GenericCalculator<FiringSolution> calculator, String filepath) {
+    return fromArrayList(readSolutions(filepath), calculator);
+  }
+
+  public static FiringSolutionManager fromArrayList(
+      ArrayList<FiringSolution> solutionArrayList, GenericCalculator<FiringSolution> calculator) {
+    final FiringSolutionManager manager = new FiringSolutionManager(solutionArrayList, calculator);
+    manager.init();
+    return manager;
+  }
+
+  private FiringSolutionManager(
       ArrayList<FiringSolution> solutionArrayList, GenericCalculator<FiringSolution> calculator) {
     solutions = solutionArrayList;
     this.calculator = calculator;
+  }
+
+  private void init() {
     calculator.init(solutions);
   }
 
-  public void addSolution(FiringSolution solution) {
-    solutions.add(solution);
-    calculator.whenAdded();
+  private static ArrayList<FiringSolution> readSolutions(String filepath) {
+    // https://stackoverflow.com/questions/43981487/how-to-append-object-to-existing-json-file-with-jackson
+    ArrayList<FiringSolution> solutionList = new ArrayList<>();
+    final ObjectMapper mapper = new ObjectMapper();
+    try {
+      solutionList =
+          mapper.readValue(new File(filepath), new TypeReference<ArrayList<FiringSolution>>() {});
+      DriverStation.reportWarning("Loaded all firing solutions", false);
+    } catch (Exception e) {
+      e.printStackTrace();
+      DriverStation.reportError("Failed to load firing solutions", e.getStackTrace());
+    }
+    return solutionList;
   }
 
-  public void writeSolution(FiringSolution solution) {
+  public static void writeSolution(FiringSolution solution, String filepath) {
+    final File file = new File(filepath);
+    final ObjectMapper mapper = new ObjectMapper();
     try {
-      addSolution(solution);
-      objectMapper.writeValue(new File("/media/sda1/FiringSolutions.json"), solutions);
+      JsonGenerator g = mapper.getFactory().createGenerator(new FileOutputStream(file));
+      mapper.writeValue(new File("/media/sda1/FiringSolutions.json"), solution);
       DriverStation.reportWarning("Wrote new solution to firing solution json", false);
+      g.close();
     } catch (Exception e) {
       e.printStackTrace();
       DriverStation.reportError("Failed to write new firing solution", false);
     }
   }
 
-  public void loadSolutions() {
-    List<FiringSolution> solutionList;
-    try {
-      solutionList =
-          objectMapper.readValue(
-              new File(Filesystem.getDeployDirectory().getPath() + "/FiringSolutions.json"),
-              new TypeReference<ArrayList<FiringSolution>>() {});
-      for (FiringSolution solution : solutionList) {
-        addSolution(solution);
-      }
-      DriverStation.reportWarning("Loaded all firing solutions", false);
-    } catch (Exception e) {
-      e.printStackTrace();
-      DriverStation.reportError("Failed to load firing solutions", e.getStackTrace());
-    }
+  public void addSolution(FiringSolution solution) {
+    solutions.add(solution);
+    calculator.whenAdded();
   }
 
   public FiringSolution calcSolution(double currentMag, double currentDeg) {
