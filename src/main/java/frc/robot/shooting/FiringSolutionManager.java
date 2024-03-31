@@ -15,16 +15,16 @@ public class FiringSolutionManager implements GenericFiringSolutionManager<Firin
   private final ArrayList<FiringSolution> solutions;
   private final GenericCalculator<FiringSolution> calculator;
 
-  public static FiringSolutionManager createNew(GenericCalculator<FiringSolution> calculator) {
-    return fromArrayList(new ArrayList<>(), calculator);
+  public static FiringSolutionManager createEmpty(GenericCalculator<FiringSolution> calculator) {
+    return createFromArrayList(new ArrayList<>(), calculator);
   }
 
-  public static FiringSolutionManager fromJson(
+  public static FiringSolutionManager createFromJson(
       GenericCalculator<FiringSolution> calculator, String filepath) {
-    return fromArrayList(readSolutions(filepath), calculator);
+    return createFromArrayList(readSolutions(filepath), calculator);
   }
 
-  public static FiringSolutionManager fromArrayList(
+  public static FiringSolutionManager createFromArrayList(
       ArrayList<FiringSolution> solutionArrayList, GenericCalculator<FiringSolution> calculator) {
     final FiringSolutionManager manager = new FiringSolutionManager(solutionArrayList, calculator);
     manager.init();

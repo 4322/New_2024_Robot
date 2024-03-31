@@ -114,7 +114,7 @@ public class RobotContainer {
     }
 
     firingSolutionManager =
-        FiringSolutionManager.fromJson(
+        FiringSolutionManager.createFromJson(
             new Calculator1D<>(),
             Filesystem.getDeployDirectory().getPath() + "/FiringSolutions.json");
 
