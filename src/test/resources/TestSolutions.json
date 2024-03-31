@@ -1,0 +1,20 @@
+[
+  {
+    "shotMag": 5.0,
+    "shotDeg": 0.0,
+    "flywheelSpeed": 10.0,
+    "shotRotations": 10.0
+  },
+  {
+    "shotMag": 10.0,
+    "shotDeg": 0.0,
+    "flywheelSpeed": 30.0,
+    "shotRotations": 30.0
+  },
+  {
+    "shotMag": 30.0,
+    "shotDeg": 0.0,
+    "flywheelSpeed": 50.0,
+    "shotRotations": 50.0
+  }
+]
