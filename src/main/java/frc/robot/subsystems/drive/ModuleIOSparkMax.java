@@ -56,7 +56,8 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final boolean isTurnMotorInverted = true;
   private final Rotation2d absoluteEncoderOffset;
 
-  public ModuleIOSparkMax(int driveID, int turnID, int analogInputChannel, Rotation2d absEncoderOffset) {
+  public ModuleIOSparkMax(
+      int driveID, int turnID, int analogInputChannel, Rotation2d absEncoderOffset) {
     driveSparkMax = new CANSparkMax(driveID, MotorType.kBrushless);
     turnSparkMax = new CANSparkMax(turnID, MotorType.kBrushless);
     turnAbsoluteEncoder = new AnalogInput(analogInputChannel);

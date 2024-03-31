@@ -19,5 +19,5 @@ public class NoteSensor {
 
   public boolean isTunnelBeamBroken() {
     return inputs.tunnelBeamBroken;
-  } 
+  }
 }
