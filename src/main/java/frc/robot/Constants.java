@@ -35,10 +35,10 @@ public final class Constants {
     public static final double kD = 0.9;
     public static final double kFF = 0.0;
 
-    public static final double reverseSoftLimitThresholdRotations = 0;
-    public static final double forwardSoftLimitThresholdRotations = 0;
+    public static final double reverseSoftLimitThresholdRotations = 14.0 / 3.0;
+    public static final double forwardSoftLimitThresholdRotations = 236.0  / 3.0;
     public static final double defaultPivotPositionRotations = 0;
-    public static final double toleranceRotations = 0;
+    public static final double toleranceRotations = 0.5;
   }
 
   public static enum Mode {

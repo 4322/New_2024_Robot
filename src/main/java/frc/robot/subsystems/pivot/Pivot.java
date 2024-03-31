@@ -11,14 +11,14 @@ public class Pivot extends SubsystemBase {
 
   private final PivotIO io;
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
-
+  //TODO: Need to set constants for pivot. 
   public Pivot(PivotIO io) {
     this.io = io;
 
     switch (Constants.currentMode) {
       case REAL:
       case REPLAY:
-        io.configurePID(0.9, 0.0, 0.0);
+        io.configurePID(Constants.Pivot.kP, Constants.Pivot.kI, Constants.Pivot.kD);
         break;
       case SIM:
         io.configurePID(Constants.Pivot.kP, Constants.Pivot.kI, Constants.Pivot.kD);
